@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NutriTrack | Your Personal Nutrition Assistant</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* ===== Global Styles ===== */
+        :root {
+            --primary: #4CAF50;
+            --primary-dark: #388E3C;
+            --secondary: #FF9800;
+            --light: #F5F5F5;
+            --dark: #212121;
+            --gray: #757575;
+            --white: #FFFFFF;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        section {
+            padding: 4rem 0;
+        }
+        
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary-dark);
+            text-align: center;
+        }
+        
+        /* ===== Header & Navigation ===== */
+        header {
+            background-color: var(--white);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo img {
+            height: 40px;
+        }
+        
+        .logo h1 {
+            color: var(--primary);
+            font-size: 1.5rem;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 1.5rem;
+            align-items: center;
+        }
+        
+        .nav-links a {
+            color: var(--dark);
+            font-weight: 500;
+            transition: var(--transition);
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+        
+        .btn {
+            display: inline-block;
+            background-color: var(--primary);
+            color: var(--white);
+            padding: 0.6rem 1.5rem;
+            border-radius: 4px;
+            font-weight: 500;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--primary);
+            color: var(--white);
+        }
+        
+        /* ===== Hero Section ===== */
+        .hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1490645935967-10de6ba17061');
+            background-size: cover;
+            background-position: center;
+            color: var(--white);
+            text-align: center;
+            padding: 6rem 0;
+        }
+        
+        .hero h2 {
+            font-size: 2.8rem;
+            margin-bottom: 1rem;
+            color: var(--white);
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        /* ===== Auth Forms ===== */
+        .auth-section {
+            display: flex;
+            justify-content: center;
+            min-height: calc(100vh - 200px);
+            align-items: center;
+        }
+        
+        .auth-container {
+            background-color: var(--white);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            padding: 2rem;
+            width: 100%;
+            max-width: 500px;
+            margin: 2rem 0;
+        }
+        
+        .auth-container h2 {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .auth-form .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .auth-form label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .auth-form input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        .auth-form button {
+            width: 100%;
+            margin-top: 1rem;
+        }
+        
+        .auth-toggle {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+        
+        /* ===== BMI Calculator ===== */
+        .bmi-calculator {
+            background-color: var(--white);
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            margin-bottom: 3rem;
+        }
+        
+        .bmi-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .bmi-result {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border-radius: 4px;
+            background-color: #f8f9fa;
+        }
+        
+        .bmi-scale {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            text-align: center;
+        }
+        
+        .scale-item {
+            flex: 1;
+            padding: 0.5rem;
+            border-radius: 4px;
+        }
+        
+        .scale-item.active {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        /* ===== Nutrition Comparison ===== */
+        .nutrition-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        @media (max-width: 768px) {
+            .nutrition-comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .chart-container {
+            background-color: var(--white);
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+        }
+        
+        .chart-container h3 {
+            text-align: center;
+            margin-bottom: 1rem;
+            color: var(--secondary);
+        }
+        
+        /* ===== Food Search ===== */
+        .search-container {
+            background-color: var(--white);
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            margin-bottom: 3rem;
+        }
+        
+        .search-bar {
+            display: flex;
+            margin-bottom: 1.5rem;
+        }
+        
+        .search-bar input {
+            flex: 1;
+            padding: 0.8rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px 0 0 4px;
+            font-size: 1rem;
+        }
+        
+        .search-bar button {
+            background-color: var(--secondary);
+            color: var(--white);
+            border: none;
+            padding: 0 1.5rem;
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+        
+        .search-bar button:hover {
+            background-color: #F57C00;
+        }
+        
+        .search-results {
+            margin-top: 1.5rem;
+        }
+        
+        .food-item {
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        /* ===== Healthy Tips ===== */
+        .tips-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .tip-card {
+            background-color: var(--white);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+        
+        .tip-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .tip-card h3 {
+            color: var(--secondary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        /* ===== Footer ===== */
+        footer {
+            background-color: var(--dark);
+            color: var(--white);
+            padding: 3rem 0;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .footer-column h3 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+        
+        .footer-links a {
+            color: var(--light);
+            transition: var(--transition);
+        }
+        
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .social-links a {
+            color: var(--white);
+            background-color: var(--gray);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+        
+        .social-links a:hover {
+            background-color: var(--primary);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 2rem;
+            margin-top: 2rem;
+            border-top: 1px solid var(--gray);
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        /* ===== Responsive Design ===== */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-links {
+                flex-direction: column;
+                gap: 1rem;
+                width: 100%;
+            }
+            
+            .nav-links li {
+                width: 100%;
+                text-align: center;
+            }
+            
+            .bmi-form {
+                grid-template-columns: 1fr;
+            }
+            
+            .hero h2 {
+                font-size: 2rem;
+            }
+            
+            .search-bar {
+                flex-direction: column;
+            }
+            
+            .search-bar input {
+                border-radius: 4px;
+                margin-bottom: 0.5rem;
+            }
+            
+            .search-bar button {
+                border-radius: 4px;
+                padding: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <div class="logo">
+                    <img src="https://via.placeholder.com/40" alt="NutriTrack Logo">
+                    <h1>NutriTrack</h1>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#bmi">BMI Calculator</a></li>
+                    <li><a href="#nutrition">Nutrition Comparison</a></li>
+                    <li><a href="#search">Food Search</a></li>
+                    <li><a href="#tips">Healthy Tips</a></li>
+                    <li><a href="#" class="btn" id="loginBtn">Login</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="container">
+            <h2>Track Your Nutrition, Improve Your Health</h2>
+            <p>Calculate your BMI, compare food nutrients, search for nutritional information, and discover healthy eating tips - all in one place.</p>
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <a href="#" class="btn" id="heroLoginBtn">Login</a>
+                <a href="#" class="btn btn-outline" id="heroRegisterBtn">Register</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Login Form (Hidden by default) -->
+    <section class="auth-section" id="authSection" style="display: none;">
+        <div class="container">
+            <div class="auth-container" id="authContainer">
+                <h2 id="authTitle">Login</h2>
+                <form class="auth-form" id="authForm">
+                    <div class="form-group" id="nameGroup" style="display: none;">
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" placeholder="Enter your full name">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" placeholder="Enter your email">
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" placeholder="Enter your password">
+                    </div>
+                    <button type="submit" class="btn" id="authSubmitBtn">Login</button>
+                </form>
+                <div class="auth-toggle">
+                    <span id="authToggleText">Don't have an account?</span>
+                    <a href="#" id="authToggleLink">Register</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- BMI Calculator -->
+    <section class="container" id="bmi">
+        <h2>BMI Calculator</h2>
+        <div class="bmi-calculator">
+            <form id="bmiForm" class="bmi-form">
+                <div class="form-group">
+                    <label for="height">Height (cm)</label>
+                    <input type="number" id="height" placeholder="e.g., 170" required>
+                </div>
+                <div class="form-group">
+                    <label for="weight">Weight (kg)</label>
+                    <input type="number" id="weight" placeholder="e.g., 70" required>
+                </div>
+                <div class="form-group">
+                    <label for="age">Age</label>
+                    <input type="number" id="age" placeholder="e.g., 30">
+                </div>
+                <div class="form-group">
+                    <label for="gender">Gender</label>
+                    <select id="gender">
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn" style="grid-column: span 2;">Calculate BMI</button>
+            </form>
+            <div id="bmiResult" class="bmi-result"></div>
+            
+            <div class="bmi-scale">
+                <div class="scale-item" id="underweight">
+                    <p>Underweight</p>
+                    <p>&lt; 18.5</p>
+                </div>
+                <div class="scale-item" id="normal">
+                    <p>Normal</p>
+                    <p>18.5 - 24.9</p>
+                </div>
+                <div class="scale-item" id="overweight">
+                    <p>Overweight</p>
+                    <p>25 - 29.9</p>
+                </div>
+                <div class="scale-item" id="obese">
+                    <p>Obese</p>
+                    <p>≥ 30</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Nutrition Comparison -->
+    <section class="container" id="nutrition">
+        <h2>Nutrition Comparison</h2>
+        <div class="nutrition-comparison">
+            <div class="chart-container">
+                <h3>Macronutrients Distribution</h3>
+                <canvas id="macroChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <h3>Micronutrients Comparison</h3>
+                <canvas id="microChart"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <!-- Food Search -->
+    <section class="container" id="search">
+        <h2>Food Search Engine</h2>
+        <div class="search-container">
+            <div class="search-bar">
+                <input type="text" id="foodSearch" placeholder="Search for a food (e.g., banana, chicken breast)">
+                <button id="searchBtn" class="btn"><i class="fas fa-search"></i> Search</button>
+            </div>
+            <div class="search-results" id="searchResults"></div>
+        </div>
+    </section>
+
+    <!-- Healthy Tips -->
+    <section class="container" id="tips">
+        <h2>Healthy Eating Tips</h2>
+        <div class="tips-container">
+            <div class="tip-card">
+                <h3><i class="fas fa-apple-alt"></i> Eat Whole Foods</h3>
+                <p>Choose minimally processed foods like fruits, vegetables, whole grains, and lean proteins for optimal nutrition.</p>
+            </div>
+            <div class="tip-card">
+                <h3><i class="fas fa-tint"></i> Stay Hydrated</h3>
+                <p>Drink at least 8 glasses of water daily. Proper hydration supports metabolism and reduces false hunger signals.</p>
+            </div>
+            <div class="tip-card">
+                <h3><i class="fas fa-utensils"></i> Mindful Eating</h3>
+                <p>Eat slowly, savor each bite, and pay attention to hunger cues to prevent overeating.</p>
+            </div>
+            <div class="tip-card">
+                <h3><i class="fas fa-seedling"></i> Fiber-Rich Foods</h3>
+                <p>Include fiber from vegetables, fruits, and whole grains to support digestion and maintain healthy weight.</p>
+            </div>
+            <div class="tip-card">
+                <h3><i class="fas fa-balance-scale"></i> Portion Control</h3>
+                <p>Use smaller plates and be aware of serving sizes to manage calorie intake effectively.</p>
+            </div>
+            <div class="tip-card">
+                <h3><i class="fas fa-heart"></i> Healthy Fats</h3>
+                <p>Include sources of unsaturated fats like avocados, nuts, seeds, and olive oil for heart health.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>NutriTrack</h3>
+                    <p>Your personal nutrition assistant for healthier living.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#bmi">BMI Calculator</a></li>
+                        <li><a href="#nutrition">Nutrition Comparison</a></li>
+                        <li><a href="#search">Food Search</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Resources</h3>
+                    <ul class="footer-links">
+                        <li><a href="#tips">Healthy Tips</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Recipes</a></li>
+                        <li><a href="#">Meal Plans</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Support</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Contact Us</a></li>
+                        <li><a href="#">FAQ</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2023 NutriTrack. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // Auth System Toggle
+        const authSection = document.getElementById('authSection');
+        const authContainer = document.getElementById('authContainer');
+        const authTitle = document.getElementById('authTitle');
+        const authForm = document.getElementById('authForm');
+        const nameGroup = document.getElementById('nameGroup');
+        const authSubmitBtn = document.getElementById('authSubmitBtn');
+        const authToggleText = document.getElementById('authToggleText');
+        const authToggleLink = document.getElementById('authToggleLink');
+        const loginBtn = document.getElementById('loginBtn');
+        const heroLoginBtn = document.getElementById('heroLoginBtn');
+        const heroRegisterBtn = document.getElementById('heroRegisterBtn');
+        
+        let isLogin = true;
+        
+        function toggleAuth() {
+            isLogin = !isLogin;
+            
+            if (isLogin) {
+                authTitle.textContent = 'Login';
+                nameGroup.style.display = 'none';
+                authSubmitBtn.textContent = 'Login';
+                authToggleText.textContent = "Don't have an account?";
+                authToggleLink.textContent = 'Register';
+            } else {
+                authTitle.textContent = 'Register';
+                nameGroup.style.display = 'block';
+                authSubmitBtn.textContent = 'Register';
+                authToggleText.textContent = "Already have an account?";
+                authToggleLink.textContent = 'Login';
+            }
+        }
+        
+        function showAuth() {
+            authSection.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function hideAuth() {
+            authSection.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+        
+        authToggleLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            toggleAuth();
+        });
+        
+        loginBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            isLogin = true;
+            toggleAuth();
+            showAuth();
+        });
+        
+        heroLoginBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            isLogin = true;
+            toggleAuth();
+            showAuth();
+        });
+        
+        heroRegisterBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            isLogin = false;
+            toggleAuth();
+            showAuth();
+        });
+        
+        // Close auth when clicking outside
+        authSection.addEventListener('click', function(e) {
+            if (e.target === authSection) {
+                hideAuth();
+            }
+        });
+        
+        // BMI Calculator
+        document.getElementById('bmiForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const height = parseFloat(document.getElementById('height').value) / 100; // Convert cm to m
+            const weight = parseFloat(document.getElementById('weight').value);
+            const age = document.getElementById('age').value;
+            const gender = document.getElementById('gender').value;
+            
+            if (height && weight) {
+                const bmi = (weight / (height * height)).toFixed(1);
+                let category;
+                
+                // Reset all scale items
+                document.querySelectorAll('.scale-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                if (bmi < 18.5) {
+                    category = "Underweight";
+                    document.getElementById('underweight').classList.add('active');
+                } else if (bmi < 25) {
+                    category = "Normal weight";
+                    document.getElementById('normal').classList.add('active');
+                } else if (bmi < 30) {
+                    category = "Overweight";
+                    document.getElementById('overweight').classList.add('active');
+                } else {
+                    category = "Obese";
+                    document.getElementById('obese').classList.add('active');
+                }
+                
+                let resultText = `<p>Your BMI is <strong>${bmi}</strong></p><p>Category: <strong>${category}</strong></p>`;
+                
+                if (age) {
+                    resultText += `<p>Age: <strong>${age}</strong></p>`;
+                }
+                
+                resultText += `<p>Gender: <strong>${gender.charAt(0).toUpperCase() + gender.slice(1)}</strong></p>`;
+                
+                document.getElementById('bmiResult').innerHTML = resultText;
+            }
+        });
+        
+        // Nutrition Charts
+        // Macronutrients Chart
+        const macroCtx = document.getElementById('macroChart').getContext('2d');
+        const macroChart = new Chart(macroCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Carbohydrates', 'Proteins', 'Fats'],
+                datasets: [{
+                    data: [50, 25, 25],
+                    backgroundColor: [
+                        '#4CAF50',
+                        '#FF9800',
+                        '#2196F3'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.label}: ${context.raw}%`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Micronutrients Chart
+        const microCtx = document.getElementById('microChart').getContext('2d');
+        const microChart = new Chart(microCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Vitamin A', 'Vitamin C', 'Calcium', 'Iron'],
+                datasets: [
+                    {
+                        label: 'Food 1',
+                        data: [75, 40, 30, 60],
+                        backgroundColor: '#4CAF50',
+                    },
+                    {
+                        label: 'Food 2',
+                        data: [30, 80, 50, 20],
+                        backgroundColor: '#FF9800',
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: '% Daily Value'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    }
+                }
+            }
+        });
+        
+        // Food Search Engine
+        document.getElementById('searchBtn').addEventListener('click', function() {
+            const query = document.getElementById('foodSearch').value.trim();
+            
+            if (query) {
+                // In a real app, this would fetch from an API like Nutritionix
+                const mockResults = [
+                    { 
+                        name: "Banana (medium)", 
+                        calories: 105, 
+                        macros: { carbs: 27, protein: 1.3, fat: 0.4 },
+                        micros: { potassium: 422, vitaminC: 17, vitaminB6: 20 }
+                    },
+                    { 
+                        name: "Chicken Breast (100g)", 
+                        calories: 165, 
+                        macros: { carbs: 0, protein: 31, fat: 3.6 },
+                        micros: { niacin: 65, selenium: 40, vitaminB6: 25 }
+                    },
+                    { 
+                        name: "Almonds (28g)", 
+                        calories: 164, 
+                        macros: { carbs: 6, protein: 6, fat: 14 },
+                        micros: { vitaminE: 37, magnesium: 19, riboflavin: 17 }
+                    }
+                ];
+                
+                let resultsHTML = '<div class="search-results-container">';
+                resultsHTML += `<h3 style="margin-bottom: 1rem;">Search Results for "${query}"</h3>`;
+                
+                mockResults.forEach(food => {
+                    resultsHTML += `
+                        <div class="food-item">
+                            <h4>${food.name}</h4>
+                            <p><strong>Calories:</strong> ${food.calories} kcal</p>
+                            <p><strong>Macronutrients:</strong> 
+                                Carbs: ${food.macros.carbs}g | 
+                                Protein: ${food.macros.protein}g | 
+                                Fat: ${food.macros.fat}g
+                            </p>
+                            <p><strong>Key Micronutrients:</strong> 
+                                ${Object.entries(food.micros).map(([key, value]) => 
+                                    `${key}: ${value}% DV`).join(' | ')}
+                            </p>
+                        </div>
+                    `;
+                });
+                
+                resultsHTML += '</div>';
+                document.getElementById('searchResults').innerHTML = resultsHTML;
+            }
+        });
+        
+        // Form submission (demo only)
+        authForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert(isLogin ? 'Login successful!' : 'Registration successful!');
+            hideAuth();
+        });
+    </script>
+</body>
+</html>
